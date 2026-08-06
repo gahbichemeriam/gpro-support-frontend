@@ -28,6 +28,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/problemes/problemes.component').then(m => m.ProblemesComponent)
   },
   {
+    path: 'resolutions',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/resolutions/resolutions.component').then(m => m.ResolutionsComponent)
+  },
+  {
     path: 'versions',
     canActivate: [authGuard],
     loadComponent: () => import('./features/versions/versions.component').then(m => m.VersionsComponent)

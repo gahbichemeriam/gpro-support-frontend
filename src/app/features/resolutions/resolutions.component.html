@@ -1,0 +1,159 @@
+<!-- Toolbar -->
+<mat-toolbar class="toolbar">
+  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
+  <mat-icon class="section-icon">fact_check</mat-icon>
+  <span class="toolbar-title">Résolutions</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" (click)="openForm()" [disabled]="!problemeSelectionne">
+    <mat-icon>add</mat-icon> Nouvelle résolution
+  </button>
+</mat-toolbar>
+
+<div class="page-content">
+  <div class="layout">
+
+    <!-- PANNEAU GAUCHE : liste des problèmes -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <span class="panel-title">Problèmes</span>
+      </div>
+
+      <!-- Recherche -->
+      <div class="search-wrap">
+        <input class="search-input" [(ngModel)]="recherche"
+               (keyup.enter)="rechercherProblemes()"
+               placeholder="Rechercher...">
+        <button mat-icon-button (click)="rechercherProblemes()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+
+      <!-- Liste -->
+      <div class="probleme-list">
+        <div *ngFor="let p of problemes"
+             class="probleme-item"
+             [class.selected]="problemeSelectionne?.id === p.id"
+             (click)="selectionnerProbleme(p)">
+          <div class="item-code">{{ p.codeErreur }}</div>
+          <div class="item-titre">{{ p.titre }}</div>
+          <span [class]="'badge badge-' + p.priorite">{{ p.priorite }}</span>
+        </div>
+        <div class="empty-list" *ngIf="problemes.length === 0">
+          <mat-icon>search_off</mat-icon>
+          <p>Aucun problème</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANNEAU DROIT : résolutions du problème sélectionné -->
+    <div class="right-panel">
+
+      <!-- Aucun problème sélectionné -->
+      <div class="no-selection" *ngIf="!problemeSelectionne">
+        <mat-icon>touch_app</mat-icon>
+        <p>Sélectionnez un problème pour voir ses résolutions</p>
+      </div>
+
+      <ng-container *ngIf="problemeSelectionne">
+
+        <!-- En-tête du problème -->
+        <div class="probleme-header card">
+          <div class="flex-between">
+            <div>
+              <code class="code-chip">{{ problemeSelectionne.codeErreur }}</code>
+              <h3>{{ problemeSelectionne.titre }}</h3>
+              <span class="text-muted">{{ problemeSelectionne.moduleNom }} — {{ problemeSelectionne.projetNom }}</span>
+            </div>
+            <span [class]="'badge badge-' + problemeSelectionne.priorite">{{ problemeSelectionne.priorite }}</span>
+          </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="form-panel card" *ngIf="showForm">
+          <h4>{{ editMode ? 'Modifier la résolution' : 'Nouvelle résolution' }}</h4>
+          <form [formGroup]="form" (ngSubmit)="save()">
+
+            <mat-form-field appearance="outline" style="width:200px;margin-right:12px">
+              <mat-label>Type</mat-label>
+              <mat-select formControlName="typeResolution">
+                <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-slide-toggle formControlName="validationQa" color="primary" style="margin-bottom:12px">
+              Validé par QA
+            </mat-slide-toggle>
+
+            <mat-form-field appearance="outline" style="width:100%">
+              <mat-label>Description / Script</mat-label>
+              <textarea matInput formControlName="descriptionEtapes" rows="6"
+                        placeholder="UPDATE table SET ..."></textarea>
+            </mat-form-field>
+
+            <div style="display:flex;justify-content:flex-end;gap:8px">
+              <button mat-button type="button" (click)="cancel()">Annuler</button>
+              <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+                {{ editMode ? 'Mettre à jour' : 'Créer' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-wrap" *ngIf="loading">
+          <mat-spinner diameter="36"></mat-spinner>
+        </div>
+
+        <!-- Cartes résolutions -->
+        <div *ngIf="!loading">
+          <div *ngIf="resolutions.length === 0" class="empty-resolutions">
+            <mat-icon>healing</mat-icon>
+            <p>Aucune résolution pour ce problème.</p>
+          </div>
+
+          <div *ngFor="let r of resolutions" class="resolution-card card">
+
+            <!-- En-tête de la résolution -->
+            <div class="resolution-header flex-between">
+              <div class="type-badge" [style.background]="getTypeColor(r.typeResolution) + '22'"
+                   [style.color]="getTypeColor(r.typeResolution)">
+                <mat-icon>{{ getTypeIcon(r.typeResolution) }}</mat-icon>
+                {{ r.typeResolution }}
+              </div>
+              <div class="resolution-actions">
+                <span class="qa-badge validated" *ngIf="r.validationQa">
+                  <mat-icon>verified</mat-icon> QA Validé
+                </span>
+                <span class="qa-badge pending" *ngIf="!r.validationQa">
+                  <mat-icon>pending</mat-icon> En attente QA
+                </span>
+                <button mat-icon-button (click)="openForm(r)" matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button *ngIf="!r.validationQa" (click)="valider(r)" matTooltip="Valider QA" color="primary">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="delete(r.id)" matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Script / Description avec bouton copier -->
+            <div class="script-wrap" *ngIf="r.descriptionEtapes">
+              <div class="script-toolbar flex-between">
+                <span class="text-muted" style="font-size:11px">Script / Procédure</span>
+                <button mat-icon-button (click)="copierScript(r)" matTooltip="Copier">
+                  <mat-icon>{{ copiedId === r.id ? 'check' : 'content_copy' }}</mat-icon>
+                </button>
+              </div>
+              <pre class="script-block">{{ r.descriptionEtapes }}</pre>
+            </div>
+
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+  </div>
+</div>

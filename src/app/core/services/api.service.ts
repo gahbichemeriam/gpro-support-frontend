@@ -64,8 +64,14 @@ export class ApiService {
   createResolution(req: ResolutionRequest): Observable<Resolution> {
     return this.http.post<ApiResponse<Resolution>>(`${BASE}/resolutions`, req).pipe(map(r => r.data));
   }
+  updateResolution(id: number, req: ResolutionRequest): Observable<Resolution> {
+    return this.http.put<ApiResponse<Resolution>>(`${BASE}/resolutions/${id}`, req).pipe(map(r => r.data));
+  }
   validerResolution(id: number): Observable<Resolution> {
     return this.http.patch<ApiResponse<Resolution>>(`${BASE}/resolutions/${id}/valider`, {}).pipe(map(r => r.data));
+  }
+  deleteResolution(id: number): Observable<void> {
+    return this.http.delete<void>(`${BASE}/resolutions/${id}`);
   }
 
   // ===== VERSIONS =====
