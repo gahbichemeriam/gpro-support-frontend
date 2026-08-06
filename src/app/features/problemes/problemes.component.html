@@ -1,0 +1,167 @@
+<!-- Toolbar -->
+<mat-toolbar class="toolbar">
+  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
+  <mat-icon class="section-icon">bug_report</mat-icon>
+  <span class="toolbar-title">Problèmes & Résolutions</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" (click)="openForm()">
+    <mat-icon>add</mat-icon> Nouveau problème
+  </button>
+</mat-toolbar>
+
+<div class="page-content">
+
+  <!-- PARCOURS GUIDÉ : Projet → Module → Problème -->
+  <div class="parcours-guide">
+
+    <!-- Étape 1 : Sélectionner un projet -->
+    <div class="step">
+      <div class="step-header">
+        <span class="step-num">1</span>
+        <span class="step-label">Sélectionner un projet</span>
+        <button mat-button *ngIf="projetSelectionne" (click)="reinitialiserFiltres()" class="reset-btn">
+          <mat-icon>close</mat-icon> Réinitialiser
+        </button>
+      </div>
+      <div class="chips-row">
+        <button *ngFor="let p of projets"
+                [class.chip-active]="projetSelectionne?.id === p.id"
+                class="chip" (click)="selectionnerProjet(p)">
+          <mat-icon>business</mat-icon> {{ p.nom }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Étape 2 : Sélectionner un module (si projet sélectionné) -->
+    <div class="step" *ngIf="projetSelectionne">
+      <div class="step-header">
+        <span class="step-num">2</span>
+        <span class="step-label">Sélectionner un module</span>
+      </div>
+      <div class="chips-row" *ngIf="modules.length > 0">
+        <button *ngFor="let m of modules"
+                [class.chip-active]="moduleSelectionne?.id === m.id"
+                class="chip" (click)="selectionnerModule(m)">
+          <mat-icon>extension</mat-icon> {{ m.nom }}
+        </button>
+      </div>
+      <p class="text-muted" *ngIf="modules.length === 0">Aucun module pour ce projet.</p>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="search-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher par titre ou code erreur</mat-label>
+        <input matInput [(ngModel)]="termeRecherche" (keyup.enter)="rechercher()"
+               [ngModelOptions]="{standalone: true}">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <button mat-raised-button (click)="rechercher()">Rechercher</button>
+    </div>
+
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-panel card" *ngIf="showForm">
+    <h3>{{ editMode ? 'Modifier le problème' : 'Nouveau problème' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Module</mat-label>
+        <mat-select formControlName="moduleId">
+          <mat-option *ngFor="let m of modules" [value]="m.id">{{ m.nom }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('moduleId')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Priorité</mat-label>
+        <mat-select formControlName="priorite">
+          <mat-option *ngFor="let p of priorites" [value]="p">{{ p }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Code erreur</mat-label>
+        <input matInput formControlName="codeErreur" placeholder="ERR-PROD-201">
+        <mat-error *ngIf="form.get('codeErreur')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-col">
+        <mat-label>Titre du problème</mat-label>
+        <input matInput formControlName="titre">
+        <mat-error *ngIf="form.get('titre')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <div class="form-actions full-col">
+        <button mat-button type="button" (click)="cancel()">Annuler</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          {{ editMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-wrap" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Table des problèmes -->
+  <div class="table-wrap card" *ngIf="!loading">
+    <div class="table-header flex-between">
+      <span class="count">{{ problemes.length }} problème(s) trouvé(s)</span>
+      <span class="text-muted" *ngIf="moduleSelectionne">
+        Module : <strong>{{ moduleSelectionne.nom }}</strong>
+      </span>
+    </div>
+
+    <table mat-table [dataSource]="problemes" class="gpro-table">
+
+      <ng-container matColumnDef="codeErreur">
+        <th mat-header-cell *matHeaderCellDef>Code</th>
+        <td mat-cell *matCellDef="let p">
+          <code class="code-chip">{{ p.codeErreur }}</code>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="titre">
+        <th mat-header-cell *matHeaderCellDef>Titre</th>
+        <td mat-cell *matCellDef="let p"><strong>{{ p.titre }}</strong></td>
+      </ng-container>
+
+      <ng-container matColumnDef="priorite">
+        <th mat-header-cell *matHeaderCellDef>Priorité</th>
+        <td mat-cell *matCellDef="let p">
+          <span [class]="getPrioriteBadge(p.priorite)">{{ p.priorite }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="module">
+        <th mat-header-cell *matHeaderCellDef>Module</th>
+        <td mat-cell *matCellDef="let p">{{ p.moduleNom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p">
+          <button mat-icon-button (click)="openForm(p)" title="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="delete(p.id)" title="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+
+    <div class="empty" *ngIf="problemes.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>Aucun problème trouvé.</p>
+    </div>
+  </div>
+
+</div>
