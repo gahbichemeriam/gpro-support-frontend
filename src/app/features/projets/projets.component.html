@@ -1,0 +1,98 @@
+<!-- Toolbar -->
+<mat-toolbar class="toolbar">
+  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
+  <mat-icon class="section-icon">business</mat-icon>
+  <span class="toolbar-title">Projets ERP</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" (click)="openForm()">
+    <mat-icon>add</mat-icon> Nouveau projet
+  </button>
+</mat-toolbar>
+
+<div class="page-content">
+
+  <!-- Formulaire création/édition -->
+  <div class="form-panel card" *ngIf="showForm">
+    <h3>{{ editMode ? 'Modifier le projet' : 'Nouveau projet' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom du projet</mat-label>
+        <input matInput formControlName="nom" placeholder="GPRO Industry SaaS">
+        <mat-error *ngIf="form.get('nom')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Code produit</mat-label>
+        <input matInput formControlName="codeProduit" placeholder="GPRO-IND-001">
+        <mat-error *ngIf="form.get('codeProduit')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-col">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="2"></textarea>
+      </mat-form-field>
+
+      <div class="form-actions full-col">
+        <button mat-button type="button" (click)="cancel()">Annuler</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          {{ editMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-wrap" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap card" *ngIf="!loading">
+    <div class="table-header flex-between">
+      <span class="count">{{ projets.length }} projet(s)</span>
+    </div>
+
+    <table mat-table [dataSource]="projets" class="gpro-table">
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let p">
+          <strong>{{ p.nom }}</strong>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="codeProduit">
+        <th mat-header-cell *matHeaderCellDef>Code Produit</th>
+        <td mat-cell *matCellDef="let p">
+          <code class="code-chip">{{ p.codeProduit }}</code>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let p">{{ p.description || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p">
+          <button mat-icon-button (click)="openForm(p)" title="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="delete(p.id)" title="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+
+    <div class="empty" *ngIf="projets.length === 0">
+      <mat-icon>business_center</mat-icon>
+      <p>Aucun projet ERP. Créez-en un !</p>
+    </div>
+  </div>
+
+</div>
