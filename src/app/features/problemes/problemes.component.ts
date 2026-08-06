@@ -137,12 +137,12 @@ export class ProblemesComponent implements OnInit {
     if (this.form.invalid) return;
     const req = this.form.value;
     const obs = this.editMode && this.editId
-      ? this.api.createProbleme(req) // update not implemented in service yet
+      ? this.api.updateProbleme(this.editId, req)
       : this.api.createProbleme(req);
 
     obs.subscribe({
       next: () => {
-        this.snack.open('Problème enregistré ✅', '', { duration: 3000 });
+        this.snack.open(this.editMode ? 'Problème mis à jour ✅' : 'Problème créé ✅', '', { duration: 3000 });
         this.cancel();
         if (this.moduleSelectionne) this.selectionnerModule(this.moduleSelectionne);
         else this.chargerTousLesProblemes();

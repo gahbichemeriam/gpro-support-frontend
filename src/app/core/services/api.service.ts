@@ -50,6 +50,9 @@ export class ApiService {
   createProbleme(req: ProblemeRequest): Observable<Probleme> {
     return this.http.post<ApiResponse<Probleme>>(`${BASE}/problemes`, req).pipe(map(r => r.data));
   }
+  updateProbleme(id: number, req: ProblemeRequest): Observable<Probleme> {
+    return this.http.put<ApiResponse<Probleme>>(`${BASE}/problemes/${id}`, req).pipe(map(r => r.data));
+  }
   deleteProbleme(id: number): Observable<void> {
     return this.http.delete<void>(`${BASE}/problemes/${id}`);
   }
