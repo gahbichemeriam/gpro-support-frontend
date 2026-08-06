@@ -1,0 +1,31 @@
+<mat-toolbar class="toolbar">
+  <mat-icon class="toolbar-logo">support_agent</mat-icon>
+  <span class="toolbar-title">GPRO Support</span>
+  <span class="spacer"></span>
+  <span class="user-chip">
+    <mat-icon>account_circle</mat-icon>
+    {{ user?.nom }}
+    <span class="role">{{ user?.role }}</span>
+  </span>
+  <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="content">
+  <h2 class="page-title">Tableau de bord</h2>
+  <p class="text-muted mb">Que souhaitez-vous faire ?</p>
+
+  <div class="grid">
+    <div class="nav-card card" *ngFor="let c of cards" [routerLink]="c.route">
+      <div class="icon-wrap" [style.background]="c.color + '22'" [style.color]="c.color">
+        <mat-icon>{{ c.icon }}</mat-icon>
+      </div>
+      <div>
+        <div class="card-title">{{ c.label }}</div>
+        <div class="text-muted">{{ c.desc }}</div>
+      </div>
+      <mat-icon class="arrow">chevron_right</mat-icon>
+    </div>
+  </div>
+</div>

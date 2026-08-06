@@ -1,0 +1,42 @@
+<div class="login-page">
+  <div class="login-box">
+
+    <div class="login-header">
+      <mat-icon class="logo-icon">support_agent</mat-icon>
+      <h1>GPRO Support</h1>
+      <p class="text-muted">Module d'aide au support ERP</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="email?.hasError('required')">Email obligatoire</mat-error>
+        <mat-error *ngIf="email?.hasError('email')">Email invalide</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput formControlName="motDePasse" [type]="hide ? 'password' : 'text'">
+        <button mat-icon-button matSuffix type="button" (click)="hide = !hide">
+          <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="mdp?.hasError('required')">Mot de passe obligatoire</mat-error>
+        <mat-error *ngIf="mdp?.hasError('minlength')">Minimum 6 caractères</mat-error>
+      </mat-form-field>
+
+      <div class="error-msg" *ngIf="error">
+        <mat-icon>error</mat-icon> {{ error }}
+      </div>
+
+      <button mat-raised-button color="primary" type="submit"
+              class="w-100 login-btn" [disabled]="form.invalid || loading">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">Se connecter</span>
+      </button>
+
+    </form>
+  </div>
+</div>
