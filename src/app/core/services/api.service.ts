@@ -76,6 +76,9 @@ export class ApiService {
   createVersion(req: VersionErpRequest): Observable<VersionErp> {
     return this.http.post<ApiResponse<VersionErp>>(`${BASE}/versions`, req).pipe(map(r => r.data));
   }
+  updateVersion(id: number, req: VersionErpRequest): Observable<VersionErp> {
+    return this.http.put<ApiResponse<VersionErp>>(`${BASE}/versions/${id}`, req).pipe(map(r => r.data));
+  }
   deleteVersion(id: number): Observable<void> {
     return this.http.delete<void>(`${BASE}/versions/${id}`);
   }
@@ -87,6 +90,9 @@ export class ApiService {
   }
   createClient(req: ClientRequest): Observable<Client> {
     return this.http.post<ApiResponse<Client>>(`${BASE}/clients`, req).pipe(map(r => r.data));
+  }
+  updateClient(id: number, req: ClientRequest): Observable<Client> {
+    return this.http.put<ApiResponse<Client>>(`${BASE}/clients/${id}`, req).pipe(map(r => r.data));
   }
   deleteClient(id: number): Observable<void> {
     return this.http.delete<void>(`${BASE}/clients/${id}`);

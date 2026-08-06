@@ -1,0 +1,123 @@
+<!-- Toolbar -->
+<mat-toolbar class="toolbar">
+  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
+  <mat-icon class="section-icon">new_releases</mat-icon>
+  <span class="toolbar-title">Versions ERP</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" (click)="openForm()">
+    <mat-icon>add</mat-icon> Nouvelle version
+  </button>
+</mat-toolbar>
+
+<div class="page-content">
+
+  <!-- Filtre par projet -->
+  <div class="filter-bar card">
+    <span class="filter-label">Filtrer par projet :</span>
+    <div class="chips-row">
+      <button class="chip" [class.chip-active]="!projetSelectionne" (click)="toutAfficher()">
+        <mat-icon>all_inclusive</mat-icon> Tous
+      </button>
+      <button *ngFor="let p of projets" class="chip"
+              [class.chip-active]="projetSelectionne?.id === p.id"
+              (click)="filtrerParProjet(p)">
+        <mat-icon>business</mat-icon> {{ p.nom }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-panel card" *ngIf="showForm">
+    <h3>{{ editMode ? 'Modifier la version' : 'Nouvelle version' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Projet ERP</mat-label>
+        <mat-select formControlName="projetId">
+          <mat-option *ngFor="let p of projets" [value]="p.id">{{ p.nom }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('projetId')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Code version</mat-label>
+        <input matInput formControlName="codeVersion" placeholder="1.8.2">
+        <mat-error *ngIf="form.get('codeVersion')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="statut">
+          <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date de release</mat-label>
+        <input matInput formControlName="dateRelease" type="date">
+      </mat-form-field>
+
+      <div class="form-actions full-col">
+        <button mat-button type="button" (click)="cancel()">Annuler</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          {{ editMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-wrap" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap card" *ngIf="!loading">
+    <div class="table-header flex-between">
+      <span class="count">{{ versions.length }} version(s)</span>
+    </div>
+
+    <table mat-table [dataSource]="versions" class="gpro-table">
+
+      <ng-container matColumnDef="codeVersion">
+        <th mat-header-cell *matHeaderCellDef>Version</th>
+        <td mat-cell *matCellDef="let v">
+          <code class="version-chip">v{{ v.codeVersion }}</code>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let v">
+          <span [class]="getStatutClass(v.statut)">{{ v.statut }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dateRelease">
+        <th mat-header-cell *matHeaderCellDef>Date release</th>
+        <td mat-cell *matCellDef="let v">{{ v.dateRelease ?? '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="projet">
+        <th mat-header-cell *matHeaderCellDef>Projet</th>
+        <td mat-cell *matCellDef="let v">{{ v.projetNom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let v">
+          <button mat-icon-button (click)="openForm(v)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" (click)="delete(v.id)"><mat-icon>delete</mat-icon></button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+
+    <div class="empty" *ngIf="versions.length === 0">
+      <mat-icon>new_releases</mat-icon>
+      <p>Aucune version. Créez-en une !</p>
+    </div>
+  </div>
+</div>
