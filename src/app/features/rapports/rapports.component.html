@@ -1,0 +1,182 @@
+<!-- Toolbar -->
+<mat-toolbar class="toolbar">
+  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
+  <mat-icon class="section-icon">analytics</mat-icon>
+  <span class="toolbar-title">Rapports & Statistiques</span>
+  <span class="spacer"></span>
+  <button mat-stroked-button (click)="exportCsv()" matTooltip="Exporter en CSV (Excel)">
+    <mat-icon>table_view</mat-icon> CSV
+  </button>
+  <button mat-stroked-button (click)="exportJson()" matTooltip="Exporter en JSON">
+    <mat-icon>code</mat-icon> JSON
+  </button>
+  <button mat-icon-button (click)="charger()" matTooltip="Actualiser">
+    <mat-icon>refresh</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="page-content" *ngIf="!loading; else loader">
+
+  <!-- ===== KPI CARDS ===== -->
+  <section>
+    <h2 class="section-title">Indicateurs Clés (KPI)</h2>
+    <div class="kpi-grid" *ngIf="kpi">
+
+      <div class="kpi-card card">
+        <div class="kpi-icon" style="background:#7986cb22;color:#7986cb"><mat-icon>folder_open</mat-icon></div>
+        <div class="kpi-value">{{ kpi.totalProjets }}</div>
+        <div class="kpi-label">Projets ERP</div>
+      </div>
+
+      <div class="kpi-card card">
+        <div class="kpi-icon" style="background:#ef535022;color:#ef5350"><mat-icon>bug_report</mat-icon></div>
+        <div class="kpi-value">{{ kpi.totalProblemes }}</div>
+        <div class="kpi-label">Problèmes connus</div>
+      </div>
+
+      <div class="kpi-card card">
+        <div class="kpi-icon" style="background:#66bb6a22;color:#66bb6a"><mat-icon>check_circle</mat-icon></div>
+        <div class="kpi-value">{{ kpi.problemesAvecResolution }}</div>
+        <div class="kpi-label">Avec résolution</div>
+      </div>
+
+      <div class="kpi-card card">
+        <div class="kpi-icon" style="background:#ffa72622;color:#ffa726"><mat-icon>pending</mat-icon></div>
+        <div class="kpi-value">{{ kpi.problemesSansResolution }}</div>
+        <div class="kpi-label">Sans résolution</div>
+      </div>
+
+      <div class="kpi-card card">
+        <div class="kpi-icon" style="background:#26c6da22;color:#26c6da"><mat-icon>verified</mat-icon></div>
+        <div class="kpi-value">{{ kpi.resolutionsValidees }}</div>
+        <div class="kpi-label">Validées QA</div>
+      </div>
+
+      <div class="kpi-card card">
+        <div class="kpi-icon" style="background:#ab47bc22;color:#ab47bc"><mat-icon>people</mat-icon></div>
+        <div class="kpi-value">{{ kpi.totalClients }}</div>
+        <div class="kpi-label">Clients actifs</div>
+      </div>
+
+    </div>
+
+    <!-- Taux -->
+    <div class="taux-row" *ngIf="kpi">
+      <div class="taux-card card">
+        <div class="taux-label">Taux de résolution</div>
+        <div class="taux-barre">
+          <div class="barre-fill" [style.width]="kpi.tauxResolution + '%'" style="background:#66bb6a"></div>
+        </div>
+        <div class="taux-value" style="color:#66bb6a">{{ kpi.tauxResolution }}%</div>
+      </div>
+      <div class="taux-card card">
+        <div class="taux-label">Taux validation QA</div>
+        <div class="taux-barre">
+          <div class="barre-fill" [style.width]="kpi.tauxValidationQa + '%'" style="background:#26c6da"></div>
+        </div>
+        <div class="taux-value" style="color:#26c6da">{{ kpi.tauxValidationQa }}%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TOP PANNES ===== -->
+  <section>
+    <h2 class="section-title">Top 10 Pannes</h2>
+    <div class="table-wrap card">
+      <table mat-table [dataSource]="topPannes" class="gpro-table">
+
+        <ng-container matColumnDef="rang">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let p; let i = index">
+            <span class="rang" [class.top3]="i < 3">{{ i + 1 }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="codeErreur">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <td mat-cell *matCellDef="let p"><code class="code-chip">{{ p.codeErreur }}</code></td>
+        </ng-container>
+
+        <ng-container matColumnDef="titre">
+          <th mat-header-cell *matHeaderCellDef>Titre</th>
+          <td mat-cell *matCellDef="let p"><strong>{{ p.titre }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="moduleNom">
+          <th mat-header-cell *matHeaderCellDef>Module</th>
+          <td mat-cell *matCellDef="let p">{{ p.moduleNom }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="priorite">
+          <th mat-header-cell *matHeaderCellDef>Priorité</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="badge" [style.color]="getPrioriteCouleur(p.priorite)"
+                  [style.border-color]="getPrioriteCouleur(p.priorite) + '44'"
+                  [style.background]="getPrioriteCouleur(p.priorite) + '22'">
+              {{ p.priorite }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nbResolutions">
+          <th mat-header-cell *matHeaderCellDef>Résolutions</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="nb-badge">{{ p.nbResolutions }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="qaValidee">
+          <th mat-header-cell *matHeaderCellDef>QA</th>
+          <td mat-cell *matCellDef="let p">
+            <mat-icon [style.color]="p.qaValidee ? '#66bb6a' : '#ffa726'">
+              {{ p.qaValidee ? 'verified' : 'pending' }}
+            </mat-icon>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colonnesTop"></tr>
+        <tr mat-row *matRowDef="let row; columns: colonnesTop;"></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== STATS PAR MODULE ===== -->
+  <div class="stats-grid">
+
+    <section>
+      <h2 class="section-title">Problèmes par Module</h2>
+      <div class="card bars-card">
+        <div *ngFor="let m of parModule" class="bar-row">
+          <span class="bar-label">{{ m.module }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" [style.width]="getBarreWidth(m.count)"
+                 style="background: linear-gradient(90deg, #7986cb, #26c6da)"></div>
+          </div>
+          <span class="bar-count">{{ m.count }}</span>
+        </div>
+        <div class="empty" *ngIf="parModule.length === 0">Aucune donnée</div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Répartition par Priorité</h2>
+      <div class="card bars-card">
+        <div *ngFor="let p of parPriorite" class="bar-row">
+          <span class="bar-label" [style.color]="getPrioriteCouleur(p.priorite)">{{ p.priorite }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" [style.width]="getBarreWidth(p.count)"
+                 [style.background]="getPrioriteCouleur(p.priorite)"></div>
+          </div>
+          <span class="bar-count">{{ p.count }}</span>
+        </div>
+        <div class="empty" *ngIf="parPriorite.length === 0">Aucune donnée</div>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<ng-template #loader>
+  <div class="loader-wrap"><mat-spinner diameter="50"></mat-spinner></div>
+</ng-template>

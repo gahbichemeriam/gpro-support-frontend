@@ -24,6 +24,7 @@ export class DashboardComponent implements OnInit {
     { label: 'Résolutions',  icon: 'fact_check',   route: '/resolutions', color: '#ab47bc', desc: 'Scripts et procédures' },
     { label: 'Versions',     icon: 'new_releases', route: '/versions',    color: '#26c6da', desc: 'Gestion des versions' },
     { label: 'Clients',      icon: 'people',       route: '/clients',     color: '#66bb6a', desc: 'Parc clients' },
+    { label: 'Rapports',     icon: 'analytics',    route: '/rapports',    color: '#ffa726', desc: 'KPI & Top pannes' },
   ];
 
   constructor(private auth: AuthService) {}

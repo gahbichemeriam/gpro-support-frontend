@@ -89,7 +89,19 @@ export class ApiService {
     return this.http.delete<void>(`${BASE}/versions/${id}`);
   }
 
-  // ===== CLIENTS =====
+  // ===== RAPPORTS =====
+  getTopPannes(limit = 10): Observable<any[]> {
+    return this.http.get<ApiResponse<any[]>>(`${BASE}/rapports/top-pannes?limit=${limit}`).pipe(map(r => r.data));
+  }
+  getKpi(): Observable<any> {
+    return this.http.get<ApiResponse<any>>(`${BASE}/rapports/kpi`).pipe(map(r => r.data));
+  }
+  getStatsParModule(): Observable<any[]> {
+    return this.http.get<ApiResponse<any[]>>(`${BASE}/rapports/par-module`).pipe(map(r => r.data));
+  }
+  getStatsParPriorite(): Observable<any[]> {
+    return this.http.get<ApiResponse<any[]>>(`${BASE}/rapports/par-priorite`).pipe(map(r => r.data));
+  }
   getClients(projetId?: number): Observable<Client[]> {
     const url = projetId ? `${BASE}/clients?projetId=${projetId}` : `${BASE}/clients`;
     return this.http.get<ApiResponse<Client[]>>(url).pipe(map(r => r.data));

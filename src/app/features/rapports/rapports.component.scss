@@ -1,0 +1,61 @@
+.toolbar {
+  background: var(--bg-sidebar); border-bottom: 1px solid var(--border); gap: 8px;
+  .section-icon { color: #ab47bc; }
+  .toolbar-title { font-size: 17px; font-weight: 700; }
+  .spacer { flex: 1; }
+  button { margin-left: 4px; }
+}
+
+.page-content { max-width: 1100px; margin: 24px auto; padding: 0 24px; display: flex; flex-direction: column; gap: 32px; }
+
+.section-title { font-size: 16px; font-weight: 700; margin: 0 0 14px; color: var(--text); }
+
+// ===== KPI =====
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+
+.kpi-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px 12px;
+  .kpi-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; mat-icon { font-size: 22px; } }
+  .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+}
+
+.taux-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.taux-card {
+  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  .taux-label { font-size: 13px; white-space: nowrap; color: var(--text-muted); min-width: 160px; }
+  .taux-barre { flex: 1; height: 8px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; }
+  .barre-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
+  .taux-value { font-size: 18px; font-weight: 700; min-width: 50px; text-align: right; }
+}
+
+// ===== Table =====
+.table-wrap { padding: 0; overflow: hidden; }
+.gpro-table {
+  width: 100%; background: transparent;
+  th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; border-bottom-color: var(--border); padding: 10px 16px; }
+  td { border-bottom-color: var(--border); padding: 12px 16px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+}
+
+.rang { font-weight: 700; color: var(--text-muted); &.top3 { color: #ffa726; font-size: 16px; } }
+.code-chip { background: rgba(121,134,203,.15); color: #9fa8da; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-family: monospace; }
+.badge { padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid; }
+.nb-badge { background: rgba(38,198,218,.15); color: #26c6da; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+
+// ===== Barres =====
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+.bars-card { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+.bar-row {
+  display: flex; align-items: center; gap: 10px;
+  .bar-label { font-size: 12px; min-width: 100px; color: var(--text-muted); }
+  .bar-track { flex: 1; height: 10px; background: rgba(255,255,255,.07); border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 5px; transition: width .6s ease; min-width: 4px; }
+  .bar-count { font-size: 12px; font-weight: 700; min-width: 24px; text-align: right; }
+}
+
+.empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 16px; }
+.loader-wrap { display: flex; justify-content: center; align-items: center; height: 60vh; }
