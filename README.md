@@ -1,27 +1,75 @@
-# GproSupportFrontend
+# GPRO Support — Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+> Module d'aide au support ERP — Angular 17 / Angular Material
 
-## Development server
+## 📋 Description
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Interface web Angular pour GPRO Support. Permet aux agents support de naviguer à travers un parcours guidé de diagnostic, consulter les résolutions et accéder aux rapports d'activité.
 
-## Code scaffolding
+## 🏗️ Stack Technique
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+| Technologie | Version | Rôle |
+|---|---|---|
+| Angular | 17.3 | Framework frontend |
+| Angular Material | 17.3 | Composants UI |
+| RxJS | 7.x | Gestion des flux de données |
+| TypeScript | 5.x | Langage |
 
-## Build
+## 🚀 Lancement
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Prérequis
+- Node.js 20+
+- Angular CLI 17+
+- Backend GPRO Support démarré sur le port 8081
 
-## Running unit tests
+### Démarrage
+```bash
+npm install
+ng serve
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+L'application démarre sur **http://localhost:4200**
 
-## Running end-to-end tests
+## 📱 Pages disponibles
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+| Page | URL | Description |
+|---|---|---|
+| Login | /login | Authentification JWT |
+| Dashboard | /dashboard | Navigation principale |
+| Projets ERP | /projets | CRUD des projets |
+| Problèmes | /problemes | Parcours guidé + recherche |
+| Résolutions | /resolutions | Scripts SQL + validation QA |
+| Versions | /versions | Gestion des versions ERP |
+| Clients | /clients | Parc clients |
+| Rapports | /rapports | KPI + Top pannes + Export |
 
-## Further help
+## 🎨 Design
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- Thème sombre (mode nuit pour travail en production 24/7)
+- Police Roboto
+- Palette Indigo/Cyan
+
+## 🗂️ Architecture
+
+```
+src/app/
+├── core/
+│   ├── models/       → Interfaces TypeScript
+│   ├── services/     → AuthService, ApiService
+│   ├── guards/       → authGuard
+│   └── interceptors/ → jwtInterceptor
+└── features/
+    ├── auth/         → Page login
+    ├── dashboard/    → Tableau de bord
+    ├── projets/      → CRUD projets
+    ├── problemes/    → Parcours guidé
+    ├── resolutions/  → Scripts + QA
+    ├── versions/     → CRUD versions
+    ├── clients/      → Parc clients
+    └── rapports/     → KPI + Stats
+```
+
+## 👩‍💻 Auteur
+
+**Meriam Gahbiche** — Stage d'été 2026  
+Département Support — GPRO
