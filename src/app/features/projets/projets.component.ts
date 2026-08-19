@@ -12,6 +12,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../core/services/api.service';
+import { RoleService } from '../../core/services/role.service';
 import { ProjetErp } from '../../core/models';
 
 @Component({
@@ -40,7 +41,8 @@ export class ProjetsComponent implements OnInit {
   constructor(
     private api: ApiService,
     private fb: FormBuilder,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    public role: RoleService
   ) {
     this.form = this.fb.group({
       nom:         ['', [Validators.required, Validators.maxLength(150)]],

@@ -15,6 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../core/services/api.service';
+import { RoleService } from '../../core/services/role.service';
 import { Probleme, Resolution, TypeResolution, ResolutionRequest } from '../../core/models';
 
 @Component({
@@ -46,7 +47,7 @@ export class ResolutionsComponent implements OnInit {
   form: FormGroup;
   types: TypeResolution[] = ['SQL', 'PARAMETRAGE', 'PATCH_CODE', 'PROCEDURE'];
 
-  constructor(private api: ApiService, private fb: FormBuilder, private snack: MatSnackBar) {
+  constructor(private api: ApiService, private fb: FormBuilder, private snack: MatSnackBar, public role: RoleService) {
     this.form = this.fb.group({
       problemeId:        [null, Validators.required],
       typeResolution:    ['SQL', Validators.required],

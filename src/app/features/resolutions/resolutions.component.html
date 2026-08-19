@@ -4,7 +4,7 @@
   <mat-icon class="section-icon">fact_check</mat-icon>
   <span class="toolbar-title">Résolutions</span>
   <span class="spacer"></span>
-  <button mat-raised-button color="primary" (click)="openForm()" [disabled]="!problemeSelectionne">
+  <button mat-raised-button color="primary" (click)="openForm()" [disabled]="!problemeSelectionne" *ngIf="role.canEdit()">
     <mat-icon>add</mat-icon> Nouvelle résolution
   </button>
 </mat-toolbar>
@@ -127,13 +127,13 @@
                 <span class="qa-badge pending" *ngIf="!r.validationQa">
                   <mat-icon>pending</mat-icon> En attente QA
                 </span>
-                <button mat-icon-button (click)="openForm(r)" matTooltip="Modifier">
+                <button mat-icon-button (click)="openForm(r)" matTooltip="Modifier" *ngIf="role.canEdit()">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button *ngIf="!r.validationQa" (click)="valider(r)" matTooltip="Valider QA" color="primary">
+                <button mat-icon-button *ngIf="!r.validationQa && role.canValidateQA()" (click)="valider(r)" matTooltip="Valider QA" color="primary">
                   <mat-icon>check_circle</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="delete(r.id)" matTooltip="Supprimer">
+                <button mat-icon-button color="warn" (click)="delete(r.id)" matTooltip="Supprimer" *ngIf="role.canEdit()">
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>

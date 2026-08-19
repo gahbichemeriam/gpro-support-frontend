@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ApiService } from '../../core/services/api.service';
+import { RoleService } from '../../core/services/role.service';
 import { ProjetErp, ModuleErp, Probleme, Priorite } from '../../core/models';
 
 @Component({
@@ -54,7 +55,7 @@ export class ProblemesComponent implements OnInit {
 
   priorites: Priorite[] = ['BASSE', 'MOYENNE', 'HAUTE', 'CRITIQUE'];
 
-  constructor(private api: ApiService, private fb: FormBuilder, private snack: MatSnackBar) {
+  constructor(private api: ApiService, private fb: FormBuilder, private snack: MatSnackBar, public role: RoleService) {
     this.form = this.fb.group({
       moduleId:   [null, Validators.required],
       titre:      ['', [Validators.required, Validators.maxLength(255)]],

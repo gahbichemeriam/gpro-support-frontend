@@ -4,7 +4,7 @@
   <mat-icon class="section-icon">bug_report</mat-icon>
   <span class="toolbar-title">Problèmes & Résolutions</span>
   <span class="spacer"></span>
-  <button mat-raised-button color="primary" (click)="openForm()">
+  <button mat-raised-button color="primary" (click)="openForm()" *ngIf="role.canEdit()">
     <mat-icon>add</mat-icon> Nouveau problème
   </button>
 </mat-toolbar>
@@ -145,10 +145,10 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let p">
-          <button mat-icon-button (click)="openForm(p)" title="Modifier">
+          <button mat-icon-button (click)="openForm(p)" title="Modifier" *ngIf="role.canEdit()">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="delete(p.id)" title="Supprimer">
+          <button mat-icon-button color="warn" (click)="delete(p.id)" title="Supprimer" *ngIf="role.canEdit()">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
