@@ -2,6 +2,10 @@
   <mat-icon class="toolbar-logo">support_agent</mat-icon>
   <span class="toolbar-title">GPRO Support</span>
   <span class="spacer"></span>
+  <button mat-icon-button (click)="theme.toggle()" 
+          [matTooltip]="theme.isDarkMode() ? 'Passer en mode clair' : 'Passer en mode sombre'">
+    <mat-icon>{{ theme.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
   <span class="user-chip">
     <mat-icon>account_circle</mat-icon>
     {{ user?.nom }}

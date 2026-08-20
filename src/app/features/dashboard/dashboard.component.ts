@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { RoleService } from '../../core/services/role.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { LoginResponse } from '../../core/models';
 
 @Component({
@@ -33,7 +34,7 @@ export class DashboardComponent implements OnInit {
   // Cartes filtrées selon le rôle de l'utilisateur connecté
   cards: any[] = [];
 
-  constructor(private auth: AuthService, public role: RoleService) {}
+  constructor(private auth: AuthService, public role: RoleService, public theme: ThemeService) {}
 
   ngOnInit() {
     this.user = this.auth.getUser();
