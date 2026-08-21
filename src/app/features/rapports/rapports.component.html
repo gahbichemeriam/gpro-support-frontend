@@ -1,20 +1,3 @@
-<!-- Toolbar -->
-<mat-toolbar class="toolbar">
-  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
-  <mat-icon class="section-icon">analytics</mat-icon>
-  <span class="toolbar-title">Rapports & Statistiques</span>
-  <span class="spacer"></span>
-  <button mat-stroked-button (click)="exportCsv()" matTooltip="Exporter en CSV (Excel)">
-    <mat-icon>table_view</mat-icon> CSV
-  </button>
-  <button mat-stroked-button (click)="exportJson()" matTooltip="Exporter en JSON">
-    <mat-icon>code</mat-icon> JSON
-  </button>
-  <button mat-icon-button (click)="charger()" matTooltip="Actualiser">
-    <mat-icon>refresh</mat-icon>
-  </button>
-</mat-toolbar>
-
 <div class="page-content" *ngIf="!loading; else loader">
   <div class="page-header flex-between" style="margin-bottom:20px">
     <h2 style="margin:0;font-size:20px;font-weight:700"><mat-icon style="color:#ab47bc;vertical-align:middle">analytics</mat-icon> Rapports & Statistiques</h2>
