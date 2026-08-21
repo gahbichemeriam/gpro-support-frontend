@@ -39,7 +39,7 @@ export class LoginComponent {
     this.loading = true;
     this.error = '';
     this.auth.login(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/app']),
       error: () => { this.loading = false; this.error = 'Email ou mot de passe incorrect.'; }
     });
   }

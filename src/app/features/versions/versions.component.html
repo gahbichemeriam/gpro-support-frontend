@@ -1,15 +1,10 @@
-<!-- Toolbar -->
-<mat-toolbar class="toolbar">
-  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
-  <mat-icon class="section-icon">new_releases</mat-icon>
-  <span class="toolbar-title">Versions ERP</span>
-  <span class="spacer"></span>
-  <button mat-raised-button color="primary" (click)="openForm()">
-    <mat-icon>add</mat-icon> Nouvelle version
-  </button>
-</mat-toolbar>
-
 <div class="page-content">
+  <div class="page-header flex-between" style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:20px;font-weight:700"><mat-icon style="color:#26c6da;vertical-align:middle">new_releases</mat-icon> Versions ERP</h2>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nouvelle version
+    </button>
+  </div>
 
   <!-- Filtre par projet -->
   <div class="filter-bar card">

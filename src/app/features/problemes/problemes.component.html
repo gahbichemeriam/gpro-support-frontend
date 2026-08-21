@@ -1,15 +1,11 @@
 <!-- Toolbar -->
-<mat-toolbar class="toolbar">
-  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
-  <mat-icon class="section-icon">bug_report</mat-icon>
-  <span class="toolbar-title">Problèmes & Résolutions</span>
-  <span class="spacer"></span>
-  <button mat-raised-button color="primary" (click)="openForm()" *ngIf="role.canEdit()">
-    <mat-icon>add</mat-icon> Nouveau problème
-  </button>
-</mat-toolbar>
-
 <div class="page-content">
+  <div class="page-header flex-between">
+    <h2 class="page-title"><mat-icon style="color:#ef5350;vertical-align:middle">bug_report</mat-icon> Problèmes & Résolutions</h2>
+    <button mat-raised-button color="primary" (click)="openForm()" *ngIf="role.canEdit()">
+      <mat-icon>add</mat-icon> Nouveau problème
+    </button>
+  </div>
 
   <!-- PARCOURS GUIDÉ : Projet → Module → Problème -->
   <div class="parcours-guide">

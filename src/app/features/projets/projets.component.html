@@ -1,15 +1,15 @@
-<!-- Toolbar -->
-<mat-toolbar class="toolbar">
-  <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
-  <mat-icon class="section-icon">business</mat-icon>
-  <span class="toolbar-title">Projets ERP</span>
-  <span class="spacer"></span>
-  <button mat-raised-button color="primary" (click)="openForm()" *ngIf="role.canManageProjects()">
-    <mat-icon>add</mat-icon> Nouveau projet
-  </button>
-</mat-toolbar>
-
+<!-- Toolbar supprimée — gérée par le layout -->
 <div class="page-content">
+
+  <!-- En-tête de page -->
+  <div class="page-header flex-between">
+    <div>
+      <h2 class="page-title"><mat-icon style="color:#7986cb;vertical-align:middle">business</mat-icon> Projets ERP</h2>
+    </div>
+    <button mat-raised-button color="primary" (click)="openForm()" *ngIf="role.canManageProjects()">
+      <mat-icon>add</mat-icon> Nouveau projet
+    </button>
+  </div>
 
   <!-- Formulaire création/édition -->
   <div class="form-panel card" *ngIf="showForm">

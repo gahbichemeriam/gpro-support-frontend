@@ -35,6 +35,9 @@ export class ApiService {
   createModule(req: ModuleErpRequest): Observable<ModuleErp> {
     return this.http.post<ApiResponse<ModuleErp>>(`${BASE}/modules`, req).pipe(map(r => r.data));
   }
+  updateModule(id: number, req: ModuleErpRequest): Observable<ModuleErp> {
+    return this.http.put<ApiResponse<ModuleErp>>(`${BASE}/modules/${id}`, req).pipe(map(r => r.data));
+  }
   deleteModule(id: number): Observable<void> {
     return this.http.delete<void>(`${BASE}/modules/${id}`);
   }

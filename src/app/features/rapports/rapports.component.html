@@ -16,6 +16,14 @@
 </mat-toolbar>
 
 <div class="page-content" *ngIf="!loading; else loader">
+  <div class="page-header flex-between" style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:20px;font-weight:700"><mat-icon style="color:#ab47bc;vertical-align:middle">analytics</mat-icon> Rapports & Statistiques</h2>
+    <div style="display:flex;gap:8px">
+      <button mat-stroked-button (click)="exportCsv()"><mat-icon>table_view</mat-icon> CSV</button>
+      <button mat-stroked-button (click)="exportJson()"><mat-icon>code</mat-icon> JSON</button>
+      <button mat-icon-button (click)="charger()"><mat-icon>refresh</mat-icon></button>
+    </div>
+  </div>
 
   <!-- ===== KPI CARDS ===== -->
   <section>

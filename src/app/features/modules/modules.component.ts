@@ -1,20 +1,87 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ApiService } from '../../core/services/api.service';
+import { RoleService } from '../../core/services/role.service';
+import { ProjetErp, ModuleErp } from '../../core/models';
 
 @Component({
   selector: 'app-modules',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatToolbarModule, MatButtonModule, MatIconModule],
-  template: `
-    <mat-toolbar style="background:var(--bg-sidebar);border-bottom:1px solid var(--border)">
-      <button mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></button>
-      <span style="font-weight:700;margin-left:8px">Modules ERP</span>
-    </mat-toolbar>
-    <div style="padding:32px"><p class="text-muted">Page en cours de développement...</p></div>
-  `
+  imports: [
+    CommonModule, ReactiveFormsModule,
+    MatButtonModule, MatIconModule, MatFormFieldModule,
+    MatInputModule, MatSelectModule, MatTableModule,
+    MatSnackBarModule, MatProgressSpinnerModule
+  ],
+  templateUrl: './modules.component.html',
+  styleUrl: './modules.component.scss'
 })
-export class ModulesComponent {}
+export class ModulesComponent implements OnInit {
+
+  projets: ProjetErp[] = [];
+  modules: ModuleErp[] = [];
+  loading = false;
+  showForm = false;
+  editMode = false;
+  editId: number | null = null;
+
+  form: FormGroup;
+  columns = ['nom', 'description', 'projet', 'actions'];
+
+  constructor(private api: ApiService, private fb: FormBuilder,
+              private snack: MatSnackBar, public role: RoleService) {
+    this.form = this.fb.group({
+      projetId:    [null, Validators.required],
+      nom:         ['', [Validators.required, Validators.maxLength(150)]],
+      description: ['']
+    });
+  }
+
+  ngOnInit() {
+    this.api.getProjets().subscribe(p => this.projets = p);
+    this.charger();
+  }
+
+  charger() {
+    this.loading = true;
+    this.api.getModules().subscribe({
+      next: m => { this.modules = m; this.loading = false; },
+      error: () => this.loading = false
+    });
+  }
+
+  openForm(m?: ModuleErp) {
+    this.showForm = true;
+    if (m) { this.editMode = true; this.editId = m.id; this.form.patchValue(m); }
+    else { this.editMode = false; this.editId = null; this.form.reset(); }
+  }
+
+  cancel() { this.showForm = false; this.form.reset(); }
+
+  save() {
+    if (this.form.invalid) return;
+    const obs = this.editMode && this.editId
+      ? this.api.updateModule(this.editId, this.form.value)
+      : this.api.createModule(this.form.value);
+    obs.subscribe({
+      next: () => { this.snack.open('Module enregistré ✅', '', { duration: 3000 }); this.cancel(); this.charger(); },
+      error: err => this.snack.open(err.error?.message || 'Erreur', '', { duration: 4000 })
+    });
+  }
+
+  delete(id: number) {
+    if (!confirm('Supprimer ce module ?')) return;
+    this.api.deleteModule(id).subscribe({
+      next: () => { this.snack.open('Module supprimé', '', { duration: 3000 }); this.charger(); }
+    });
+  }
+}
