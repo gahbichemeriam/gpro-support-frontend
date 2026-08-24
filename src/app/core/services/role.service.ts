@@ -23,9 +23,9 @@ export class RoleService {
     return this.getRole() === 'ADMIN';
   }
 
-  /** Ingénieur R&D — gestion technique */
-  isRD(): boolean {
-    return this.getRole() === 'RD';
+  /** Développeur — gestion technique (ex-RD) */
+  isDeveloppeur(): boolean {
+    return this.getRole() === 'DEVELOPPEUR';
   }
 
   /** Agent support — consultation uniquement */
@@ -33,9 +33,9 @@ export class RoleService {
     return this.getRole() === 'AGENT_SUPPORT';
   }
 
-  /** ADMIN ou RD peuvent créer/modifier du contenu */
+  /** ADMIN ou DEVELOPPEUR peuvent créer/modifier du contenu */
   canEdit(): boolean {
-    return this.isAdmin() || this.isRD();
+    return this.isAdmin() || this.isDeveloppeur();
   }
 
   /** Seul ADMIN peut gérer les projets et les clients */
@@ -43,13 +43,13 @@ export class RoleService {
     return this.isAdmin();
   }
 
-  /** ADMIN et RD peuvent voir les rapports */
+  /** ADMIN et DEVELOPPEUR peuvent voir les rapports */
   canViewReports(): boolean {
-    return this.isAdmin() || this.isRD();
+    return this.isAdmin() || this.isDeveloppeur();
   }
 
-  /** ADMIN et RD peuvent valider QA */
+  /** ADMIN et DEVELOPPEUR peuvent valider QA */
   canValidateQA(): boolean {
-    return this.isAdmin() || this.isRD();
+    return this.isAdmin() || this.isDeveloppeur();
   }
 }

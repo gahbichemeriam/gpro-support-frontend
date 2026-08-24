@@ -26,12 +26,12 @@ export class LayoutComponent implements OnInit {
 
   allNavItems = [
     { label: 'Projets ERP',  icon: 'business',     route: '/app/projets',     roles: ['ADMIN'] },
-    { label: 'Modules',      icon: 'extension',     route: '/app/modules',     roles: ['ADMIN','RD'] },
-    { label: 'Problèmes',    icon: 'bug_report',   route: '/app/problemes',   roles: ['ADMIN','RD','AGENT_SUPPORT'] },
-    { label: 'Résolutions',  icon: 'fact_check',   route: '/app/resolutions', roles: ['ADMIN','RD','AGENT_SUPPORT'] },
-    { label: 'Versions',     icon: 'new_releases', route: '/app/versions',    roles: ['ADMIN','RD'] },
-    { label: 'Clients',      icon: 'people',       route: '/app/clients',     roles: ['ADMIN','RD','AGENT_SUPPORT'] },
-    { label: 'Rapports',     icon: 'analytics',    route: '/app/rapports',    roles: ['ADMIN','RD'] },
+    { label: 'Modules',      icon: 'extension',     route: '/app/modules',     roles: ['ADMIN','DEVELOPPEUR'] },
+    { label: 'Problèmes',    icon: 'bug_report',   route: '/app/problemes',   roles: ['ADMIN','DEVELOPPEUR','AGENT_SUPPORT'] },
+    { label: 'Résolutions',  icon: 'fact_check',   route: '/app/resolutions', roles: ['ADMIN','DEVELOPPEUR','AGENT_SUPPORT'] },
+    { label: 'Versions',     icon: 'new_releases', route: '/app/versions',    roles: ['ADMIN','DEVELOPPEUR'] },
+    { label: 'Clients',      icon: 'people',       route: '/app/clients',     roles: ['ADMIN','DEVELOPPEUR','AGENT_SUPPORT'] },
+    { label: 'Rapports',     icon: 'analytics',    route: '/app/rapports',    roles: ['ADMIN','DEVELOPPEUR'] },
   ];
 
   navItems: any[] = [];

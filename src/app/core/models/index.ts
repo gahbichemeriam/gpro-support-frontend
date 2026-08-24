@@ -6,7 +6,7 @@ export interface ApiResponse<T> {
 }
 
 // Auth
-export type Role = 'AGENT_SUPPORT' | 'RD' | 'ADMIN';
+export type Role = 'AGENT_SUPPORT' | 'DEVELOPPEUR' | 'ADMIN';
 export interface LoginRequest { email: string; motDePasse: string; }
 export interface LoginResponse { token: string; email: string; nom: string; role: Role; }
 export interface RegisterRequest { nom: string; email: string; motDePasse: string; role: Role; }

@@ -24,11 +24,11 @@ export class DashboardComponent implements OnInit {
   // Toutes les cartes avec le rôle minimum requis
   allCards = [
     { label: 'Projets ERP',  icon: 'business',     route: '/projets',     color: '#7986cb', desc: 'Gérer les projets ERP',  roles: ['ADMIN'] },
-    { label: 'Problèmes',    icon: 'bug_report',   route: '/problemes',   color: '#ef5350', desc: 'Base de connaissances',  roles: ['ADMIN','RD','AGENT_SUPPORT'] },
-    { label: 'Résolutions',  icon: 'fact_check',   route: '/resolutions', color: '#ab47bc', desc: 'Scripts et procédures',  roles: ['ADMIN','RD','AGENT_SUPPORT'] },
-    { label: 'Versions',     icon: 'new_releases', route: '/versions',    color: '#26c6da', desc: 'Gestion des versions',   roles: ['ADMIN','RD'] },
-    { label: 'Clients',      icon: 'people',       route: '/clients',     color: '#66bb6a', desc: 'Parc clients',           roles: ['ADMIN','RD','AGENT_SUPPORT'] },
-    { label: 'Rapports',     icon: 'analytics',    route: '/rapports',    color: '#ffa726', desc: 'KPI & Top pannes',       roles: ['ADMIN','RD'] },
+    { label: 'Problèmes',    icon: 'bug_report',   route: '/problemes',   color: '#ef5350', desc: 'Base de connaissances',  roles: ['ADMIN','DEVELOPPEUR','AGENT_SUPPORT'] },
+    { label: 'Résolutions',  icon: 'fact_check',   route: '/resolutions', color: '#ab47bc', desc: 'Scripts et procédures',  roles: ['ADMIN','DEVELOPPEUR','AGENT_SUPPORT'] },
+    { label: 'Versions',     icon: 'new_releases', route: '/versions',    color: '#26c6da', desc: 'Gestion des versions',   roles: ['ADMIN','DEVELOPPEUR'] },
+    { label: 'Clients',      icon: 'people',       route: '/clients',     color: '#66bb6a', desc: 'Parc clients',           roles: ['ADMIN','DEVELOPPEUR','AGENT_SUPPORT'] },
+    { label: 'Rapports',     icon: 'analytics',    route: '/rapports',    color: '#ffa726', desc: 'KPI & Top pannes',       roles: ['ADMIN','DEVELOPPEUR'] },
   ];
 
   // Cartes filtrées selon le rôle de l'utilisateur connecté
