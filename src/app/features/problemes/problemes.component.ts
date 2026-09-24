@@ -1,68 +1,49 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
 import { RoleService } from '../../core/services/role.service';
 import { ProjetErp, ModuleErp, Probleme, Priorite } from '../../core/models';
+import { ProblemeDialogComponent } from '../../shared/components/dialogs/probleme-dialog/probleme-dialog.component';
 
 @Component({
   selector: 'app-problemes',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, ReactiveFormsModule, FormsModule,
-    MatToolbarModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatTableModule, MatSnackBarModule, MatProgressSpinnerModule,
-    MatChipsModule, MatExpansionModule
+    CommonModule, FormsModule,
+    MatButtonModule, MatIconModule,
+    MatFormFieldModule, MatInputModule,
+    MatTableModule, MatSnackBarModule,
+    MatProgressSpinnerModule, MatDialogModule
   ],
   templateUrl: './problemes.component.html',
   styleUrl: './problemes.component.scss'
 })
 export class ProblemesComponent implements OnInit {
 
-  // Données des filtres en cascade
   projets: ProjetErp[] = [];
   modules: ModuleErp[] = [];
   problemes: Probleme[] = [];
-
-  // Sélections actives
   projetSelectionne: ProjetErp | null = null;
   moduleSelectionne: ModuleErp | null = null;
-
-  // Recherche
   termeRecherche = '';
-
-  // État UI
   loading = false;
-  showForm = false;
-  editMode = false;
-  editId: number | null = null;
-
-  form: FormGroup;
   columns = ['codeErreur', 'titre', 'priorite', 'module', 'actions'];
 
-  priorites: Priorite[] = ['BASSE', 'MOYENNE', 'HAUTE', 'CRITIQUE'];
-
-  constructor(private api: ApiService, private fb: FormBuilder, private snack: MatSnackBar, public role: RoleService) {
-    this.form = this.fb.group({
-      moduleId:   [null, Validators.required],
-      titre:      ['', [Validators.required, Validators.maxLength(255)]],
-      codeErreur: ['', [Validators.required, Validators.maxLength(50)]],
-      priorite:   ['MOYENNE', Validators.required]
-    });
-  }
+  constructor(
+    private api: ApiService,
+    private dialog: MatDialog,
+    private snack: MatSnackBar,
+    public role: RoleService
+  ) {}
 
   ngOnInit() {
     this.api.getProjets().subscribe(p => this.projets = p);
@@ -86,7 +67,6 @@ export class ProblemesComponent implements OnInit {
       next: m => { this.modules = m; this.loading = false; },
       error: () => this.loading = false
     });
-    // Filtrer les problèmes par projet
     this.api.getProblemes().subscribe(p => {
       this.problemes = p.filter(pb => pb.projetId === projet.id);
     });
@@ -102,10 +82,7 @@ export class ProblemesComponent implements OnInit {
   }
 
   rechercher() {
-    if (!this.termeRecherche.trim()) {
-      this.chargerTousLesProblemes();
-      return;
-    }
+    if (!this.termeRecherche.trim()) { this.chargerTousLesProblemes(); return; }
     this.loading = true;
     this.api.getProblemes(undefined, this.termeRecherche).subscribe({
       next: p => { this.problemes = p; this.loading = false; },
@@ -121,48 +98,42 @@ export class ProblemesComponent implements OnInit {
     this.chargerTousLesProblemes();
   }
 
-  openForm(p?: Probleme) {
-    this.showForm = true;
-    if (p) {
-      this.editMode = true; this.editId = p.id;
-      this.form.patchValue({ moduleId: p.moduleId, titre: p.titre, codeErreur: p.codeErreur, priorite: p.priorite });
-    } else {
-      this.editMode = false; this.editId = null;
-      this.form.reset({ priorite: 'MOYENNE', moduleId: this.moduleSelectionne?.id ?? null });
-    }
-  }
+  openDialog(p?: Probleme) {
+    // Charger tous les modules disponibles pour le dialog
+    this.api.getModules().subscribe(modules => {
+      const ref = this.dialog.open(ProblemeDialogComponent, {
+        width: '520px',
+        data: {
+          probleme: p,
+          modules,
+          moduleIdPreselect: this.moduleSelectionne?.id
+        }
+      });
 
-  cancel() { this.showForm = false; this.form.reset(); }
+      ref.afterClosed().subscribe(result => {
+        if (!result) return;
+        const obs = p
+          ? this.api.updateProbleme(p.id, result)
+          : this.api.createProbleme(result);
 
-  save() {
-    if (this.form.invalid) return;
-    const req = this.form.value;
-    const obs = this.editMode && this.editId
-      ? this.api.updateProbleme(this.editId, req)
-      : this.api.createProbleme(req);
-
-    obs.subscribe({
-      next: () => {
-        this.snack.open(this.editMode ? 'Problème mis à jour ✅' : 'Problème créé ✅', '', { duration: 3000 });
-        this.cancel();
-        if (this.moduleSelectionne) this.selectionnerModule(this.moduleSelectionne);
-        else this.chargerTousLesProblemes();
-      },
-      error: err => this.snack.open(err.error?.message || 'Erreur', '', { duration: 4000 })
+        obs.subscribe({
+          next: () => {
+            this.snack.open(p ? 'Problème mis à jour ✅' : 'Problème créé ✅', '', { duration: 3000 });
+            if (this.moduleSelectionne) this.selectionnerModule(this.moduleSelectionne);
+            else this.chargerTousLesProblemes();
+          },
+          error: err => this.snack.open(err.error?.message || 'Erreur', '', { duration: 4000 })
+        });
+      });
     });
   }
 
   delete(id: number) {
     if (!confirm('Supprimer ce problème ?')) return;
     this.api.deleteProbleme(id).subscribe({
-      next: () => {
-        this.snack.open('Problème supprimé', '', { duration: 3000 });
-        this.chargerTousLesProblemes();
-      }
+      next: () => { this.snack.open('Problème supprimé', '', { duration: 3000 }); this.chargerTousLesProblemes(); }
     });
   }
 
-  getPrioriteBadge(p: Priorite): string {
-    return `badge badge-${p}`;
-  }
+  getPrioriteBadge(p: Priorite): string { return `badge badge-${p}`; }
 }
