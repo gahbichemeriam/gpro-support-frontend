@@ -1,118 +1,70 @@
-<div class="page-content">
-  <div class="page-header flex-between" style="margin-bottom:20px">
-    <h2 style="margin:0;font-size:20px;font-weight:700"><mat-icon style="color:#26c6da;vertical-align:middle">new_releases</mat-icon> Versions ERP</h2>
-    <button mat-raised-button color="primary" (click)="openForm()">
-      <mat-icon>add</mat-icon> Nouvelle version
+<div class="page-header flex-between" style="margin-bottom:20px">
+  <h2 style="margin:0;font-size:20px;font-weight:700">
+    <mat-icon style="color:#26c6da;vertical-align:middle">new_releases</mat-icon> Versions ERP
+  </h2>
+  <button mat-raised-button color="primary" (click)="openDialog()">
+    <mat-icon>add</mat-icon> Nouvelle version
+  </button>
+</div>
+
+<!-- Filtre par projet -->
+<div class="card" style="padding:12px 16px;margin-bottom:16px">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:13px;color:var(--text-muted)">Filtrer :</span>
+    <button mat-stroked-button [class.active-filter]="!projetSelectionne" (click)="toutAfficher()" style="font-size:12px;height:32px">
+      Tous
+    </button>
+    <button *ngFor="let p of projets" mat-stroked-button
+            [class.active-filter]="projetSelectionne?.id === p.id"
+            (click)="filtrerParProjet(p)" style="font-size:12px;height:32px">
+      {{ p.nom }}
     </button>
   </div>
+</div>
 
-  <!-- Filtre par projet -->
-  <div class="filter-bar card">
-    <span class="filter-label">Filtrer par projet :</span>
-    <div class="chips-row">
-      <button class="chip" [class.chip-active]="!projetSelectionne" (click)="toutAfficher()">
-        <mat-icon>all_inclusive</mat-icon> Tous
-      </button>
-      <button *ngFor="let p of projets" class="chip"
-              [class.chip-active]="projetSelectionne?.id === p.id"
-              (click)="filtrerParProjet(p)">
-        <mat-icon>business</mat-icon> {{ p.nom }}
-      </button>
-    </div>
-  </div>
+<div *ngIf="loading" style="display:flex;justify-content:center;padding:40px">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
 
-  <!-- Formulaire -->
-  <div class="form-panel card" *ngIf="showForm">
-    <h3>{{ editMode ? 'Modifier la version' : 'Nouvelle version' }}</h3>
-    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+<div class="card" style="padding:0;overflow:hidden" *ngIf="!loading">
+  <table mat-table [dataSource]="versions" class="gpro-table">
 
-      <mat-form-field appearance="outline">
-        <mat-label>Projet ERP</mat-label>
-        <mat-select formControlName="projetId">
-          <mat-option *ngFor="let p of projets" [value]="p.id">{{ p.nom }}</mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('projetId')?.hasError('required')">Obligatoire</mat-error>
-      </mat-form-field>
+    <ng-container matColumnDef="codeVersion">
+      <th mat-header-cell *matHeaderCellDef>Version</th>
+      <td mat-cell *matCellDef="let v"><code class="version-chip">v{{ v.codeVersion }}</code></td>
+    </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Code version</mat-label>
-        <input matInput formControlName="codeVersion" placeholder="1.8.2">
-        <mat-error *ngIf="form.get('codeVersion')?.hasError('required')">Obligatoire</mat-error>
-      </mat-form-field>
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef>Statut</th>
+      <td mat-cell *matCellDef="let v">
+        <span [class]="getStatutClass(v.statut)">{{ v.statut }}</span>
+      </td>
+    </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Statut</mat-label>
-        <mat-select formControlName="statut">
-          <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+    <ng-container matColumnDef="dateRelease">
+      <th mat-header-cell *matHeaderCellDef>Date release</th>
+      <td mat-cell *matCellDef="let v">{{ v.dateRelease ?? '—' }}</td>
+    </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Date de release</mat-label>
-        <input matInput formControlName="dateRelease" type="date">
-      </mat-form-field>
+    <ng-container matColumnDef="projet">
+      <th mat-header-cell *matHeaderCellDef>Projet</th>
+      <td mat-cell *matCellDef="let v">{{ v.projetNom }}</td>
+    </ng-container>
 
-      <div class="form-actions full-col">
-        <button mat-button type="button" (click)="cancel()">Annuler</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-          {{ editMode ? 'Mettre à jour' : 'Créer' }}
-        </button>
-      </div>
-    </form>
-  </div>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let v">
+        <button mat-icon-button (click)="openDialog(v)"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="delete(v.id)"><mat-icon>delete</mat-icon></button>
+      </td>
+    </ng-container>
 
-  <!-- Loading -->
-  <div class="loading-wrap" *ngIf="loading">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+  </table>
 
-  <!-- Table -->
-  <div class="table-wrap card" *ngIf="!loading">
-    <div class="table-header flex-between">
-      <span class="count">{{ versions.length }} version(s)</span>
-    </div>
-
-    <table mat-table [dataSource]="versions" class="gpro-table">
-
-      <ng-container matColumnDef="codeVersion">
-        <th mat-header-cell *matHeaderCellDef>Version</th>
-        <td mat-cell *matCellDef="let v">
-          <code class="version-chip">v{{ v.codeVersion }}</code>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef>Statut</th>
-        <td mat-cell *matCellDef="let v">
-          <span [class]="getStatutClass(v.statut)">{{ v.statut }}</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="dateRelease">
-        <th mat-header-cell *matHeaderCellDef>Date release</th>
-        <td mat-cell *matCellDef="let v">{{ v.dateRelease ?? '—' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="projet">
-        <th mat-header-cell *matHeaderCellDef>Projet</th>
-        <td mat-cell *matCellDef="let v">{{ v.projetNom }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let v">
-          <button mat-icon-button (click)="openForm(v)"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button color="warn" (click)="delete(v.id)"><mat-icon>delete</mat-icon></button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
-    </table>
-
-    <div class="empty" *ngIf="versions.length === 0">
-      <mat-icon>new_releases</mat-icon>
-      <p>Aucune version. Créez-en une !</p>
-    </div>
+  <div *ngIf="versions.length === 0" style="text-align:center;padding:40px;color:var(--text-muted)">
+    <mat-icon style="font-size:40px;display:block;margin:0 auto 8px">new_releases</mat-icon>
+    <p>Aucune version.</p>
   </div>
 </div>
